@@ -3,13 +3,14 @@ import './style.css';
 import { fft, util } from 'fft-js';
 import * as Plotly from 'plotly.js-dist';
 
-const RESOLUTION = 2047;
+const SAMPLE_RATE = 2048;
+const BUFFER_SIZE = Math.pow(2, 9) - 1;
 const FREQ = 4;
 const partial = (f, phase, a = 0.5) =>
-  Math.sin(Math.PI * 2 * (phase / RESOLUTION) * f) * a;
+  Math.sin(Math.PI * 2 * (phase / SAMPLE_RATE) * f) * a;
 
 const signal = [];
-for (let i = 0; i <= RESOLUTION; i++) {
+for (let i = 0; i <= BUFFER_SIZE; i++) {
   signal.push(
     partial(4, i) +
       partial(100, i, 0.3) +
@@ -21,21 +22,18 @@ for (let i = 0; i <= RESOLUTION; i++) {
 
 const phasors = fft(signal);
 
-var frequencies = util.fftFreq(phasors, 2048), // Sample rate and coef is just used for length, and frequency step
+var frequencies = util.fftFreq(phasors, SAMPLE_RATE), // Sample rate and coef is just used for length, and frequency step
   magnitudes = util.fftMag(phasors);
 
-console.log(frequencies.length, magnitudes.length);
+console.log(frequencies.length, magnitudes.length, BUFFER_SIZE);
 
 var trace1 = {
   x: frequencies,
   y: magnitudes,
+  //mode: 'markers',
   type: 'scatter',
 };
 
 var data = [trace1];
 
 Plotly.newPlot('app', data);
-
-// Write Javascript code!
-//const appDiv = document.getElementById('app');
-//appDiv.innerHTML = `<h1>JS Starter</h1>`;
