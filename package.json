@@ -2,8 +2,20 @@
   "name": "js",
   "version": "0.0.0",
   "private": true,
+  "main": "index.js",
   "dependencies": {
     "fft-js": "^0.0.12",
-    "plotly.js-dist": "^2.8.3"
+    "plotly.js-dist": "^2.8.3",
+    "window-function": "^2.1.0"
+  },
+  "devDependencies": {
+    "css-loader": "^6.6.0",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.68.0",
+    "webpack-cli": "^4.9.2"
+  },
+  "scripts": {
+    "build": "npx webpack --mode production",
+    "start": "npx webpack serve --open"
   }
 }
