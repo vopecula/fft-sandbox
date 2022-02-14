@@ -5,30 +5,43 @@ import Plotly from 'plotly.js-dist';
 var hann = require('window-function/hann');
 var applyWindow = require('window-function/apply');
 
-const SAMPLE_RATE = 44100;
-const BUFFER_SIZE = Math.pow(2, 9) - 1;
+const SAMPLE_RATE = 1024;
+const BUFFER_SIZE = Math.pow(2, 10) - 1;
 const partial = (f, phase, a = 0.5) =>
   Math.sin(Math.PI * 2 * (phase / SAMPLE_RATE) * f) * a;
 
 const signal = [];
-for (let i = 0; i <= SAMPLE_RATE; i++) {
-  signal.push(partial(600, i, .2)+partial(1200, i, .3));
+for (let i = 0; i <= SAMPLE_RATE * 5; i++) {
+  signal.push([
+    partial(1, i, 1)
+  ].reduce((a, c) => a + c, 0)
+  );
 }
 
-const dbRef = 160;
-const toDB = (samples) => samples.map((s) => 20 * Math.log10(s / dbRef));
-const shortTimeSamples = signal.slice(0, BUFFER_SIZE + 1);
+
+const shortTimeSamples = signal.slice(0, BUFFER_SIZE + 1)
 const windowedSamples = [...shortTimeSamples];
 applyWindow(windowedSamples, hann);
 const nullFill = (samples) => [...samples, ...Array(samples.length).fill(0)];
+const dbRef = BUFFER_SIZE + 1;
+const toDB = (samples) => samples.map((s) => 20 * Math.log10(s / dbRef));
 
-const phasors = fft(nullFill(shortTimeSamples));
-const phasors2 = fft(nullFill(windowedSamples));
+const phasors0 = fft(shortTimeSamples);
+const phasors = fft(shortTimeSamples);
+const phasors2 = fft(windowedSamples);
 
 var frequencies = util.fftFreq(phasors, SAMPLE_RATE), // Sample rate and coef is just used for length, and frequency step
-  magnitudes = util.fftMag(phasors);
+magnitudes = util.fftMag(phasors);
 
-console.log(frequencies.length, magnitudes.length, BUFFER_SIZE);
+console.log(BUFFER_SIZE, frequencies.length);
+
+var trace0 = {
+  x: util.fftFreq(phasors0, SAMPLE_RATE),
+  y: util.fftMag(phasors0),
+  //mode: 'markers',
+  type: 'scatter',
+  name: 'Without Hann window and DB scale',
+};
 
 var trace1 = {
   x: frequencies,
@@ -66,7 +79,7 @@ var trace5 = {
   name: 'With Hann window',
 };
 
-Plotly.newPlot('plot1', [trace1, trace5]);
+Plotly.newPlot('plot1', [trace0, trace1, trace5]);
 // Plotly.newPlot(
 //   'plot2',
 //   [trace2],
