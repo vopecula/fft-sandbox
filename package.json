@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "fft-js": "^0.0.12",
-    "plotly.js-dist": "^2.8.3",
+    "plotly.js-dist": "^2.11.1",
     "window-function": "^2.1.0"
   },
   "devDependencies": {
