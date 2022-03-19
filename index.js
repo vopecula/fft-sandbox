@@ -8,18 +8,18 @@ var applyWindow = require('window-function/apply');
 const SAMPLE_RATE = 128;
 const BUFFER_SIZE = 64 - 1;
 const partial = (f, phase, a = 0.5) =>
-  Math.sin(Math.PI * 2 * (phase / SAMPLE_RATE) * f) * (2 / (BUFFER_SIZE + 1));
+  Math.sin(Math.PI * 2 * (phase / SAMPLE_RATE) * f) * a;
 
-const signal = [];
+const samples = [];
 for (let i = 0; i <= SAMPLE_RATE * 5; i++) {
-  signal.push([partial(9, i, 1)].reduce((a, c) => a + c, 0));
+  samples.push([partial(, i, 1)].reduce((a, c) => a + c, 0));
 }
 
-const shortTimeSamples = signal.slice(0, BUFFER_SIZE + 1);
+const shortTimeSamples = samples.slice(0, BUFFER_SIZE + 1);
 const windowedSamples = [...shortTimeSamples];
 applyWindow(windowedSamples, hann);
 const nullFill = (samples) => [...samples, ...Array(samples.length).fill(0)];
-const dbRef = BUFFER_SIZE + 1;
+const dbRef = 1;
 const toDB = (samples) => samples.map((s) => 20 * Math.log10(s / dbRef));
 
 const phasors0 = fft(shortTimeSamples);
@@ -33,7 +33,7 @@ console.log(BUFFER_SIZE, frequencies.length);
 
 var trace0 = {
   x: util.fftFreq(phasors0, SAMPLE_RATE),
-  y: util.fftMag(phasors0),
+  y: toDB(util.fftMag(phasors0).map((x) => x / (64 / 2))),
   mode: 'markers',
   //type: 'scatter',
   name: 'Without Hann window and DB scale',
@@ -48,7 +48,7 @@ var trace1 = {
 };
 
 var trace2 = {
-  y: signal,
+  y: samples,
   mode: 'markers',
   //type: 'scatter',
 };
