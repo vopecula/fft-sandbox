@@ -12,7 +12,7 @@ const partial = (f, phase, a = 0.5) =>
 
 const samples = [];
 for (let i = 0; i <= SAMPLE_RATE * 5; i++) {
-  samples.push([partial(, i, 1)].reduce((a, c) => a + c, 0));
+  samples.push([partial(9, i, 1)].reduce((a, c) => a + c, 0));
 }
 
 const shortTimeSamples = samples.slice(0, BUFFER_SIZE + 1);
@@ -34,7 +34,7 @@ console.log(BUFFER_SIZE, frequencies.length);
 var trace0 = {
   x: util.fftFreq(phasors0, SAMPLE_RATE),
   y: toDB(util.fftMag(phasors0).map((x) => x / (64 / 2))),
-  mode: 'markers',
+  /mode: 'markers',
   //type: 'scatter',
   name: 'Without Hann window and DB scale',
 };
@@ -42,8 +42,8 @@ var trace0 = {
 var trace1 = {
   x: frequencies,
   y: toDB(magnitudes),
-  //mode: 'markers',
-  type: 'scatter',
+  mode: 'markers',
+  //type: 'scatter',
   name: 'Without Hann window',
 };
 
