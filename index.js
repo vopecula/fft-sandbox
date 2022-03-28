@@ -34,7 +34,7 @@ console.log(BUFFER_SIZE, frequencies.length);
 var trace0 = {
   x: util.fftFreq(phasors0, SAMPLE_RATE),
   y: toDB(util.fftMag(phasors0).map((x) => x / (64 / 2))),
-  /mode: 'markers',
+  mode: 'markers',
   //type: 'scatter',
   name: 'Without Hann window and DB scale',
 };
